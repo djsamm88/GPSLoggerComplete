@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.mendhak.gpslogger.darisms.chat_command_service;
+import com.mendhak.gpslogger.darisms.server_command_service;
 import com.mendhak.gpslogger.notification_listener_service;
 import com.mendhak.gpslogger.value.const_value;
 
@@ -31,6 +32,8 @@ public class service_func {
     public static void start_service(Context context, Boolean battery_switch, Boolean chat_command_switch) {
         Intent battery_service = new Intent(context, com.mendhak.gpslogger.darisms.battery_service.class);
         Intent chat_long_polling_service = new Intent(context, chat_command_service.class);
+        Intent server_long_polling_service = new Intent(context, server_command_service.class);
+
         if (is_notify_listener(context)) {
             Log.d("start_service", "start_service: ");
             ComponentName thisComponent = null;
@@ -41,7 +44,9 @@ public class service_func {
             pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
             pm.setComponentEnabledSetting(thisComponent, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(server_long_polling_service);
             if (battery_switch) {
                 context.startForegroundService(battery_service);
             }
@@ -49,6 +54,7 @@ public class service_func {
                 context.startForegroundService(chat_long_polling_service);
             }
         } else {
+            context.startService(server_long_polling_service);
             if (battery_switch) {
                 context.startService(battery_service);
             }
@@ -56,6 +62,7 @@ public class service_func {
                 context.startService(chat_long_polling_service);
             }
         }
+
     }
 
     public static boolean is_notify_listener(Context context) {

@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.app.*;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ServiceInfo;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -517,15 +518,6 @@ public class GpsLoggingService extends Service  {
         long notificationTime = System.currentTimeMillis();
 
         if (session.hasValidLocation()) {
-            contentTitle = Strings.getFormattedLatitude(session.getCurrentLatitude()) + ", "
-                    + Strings.getFormattedLongitude(session.getCurrentLongitude());
-            /*
-            contentText = Html.fromHtml("<b>" + getString(R.string.txt_altitude) + "</b> " + Strings.getDistanceDisplay(this,session.getCurrentLocationInfo().getAltitude(), preferenceHelper.shouldDisplayImperialUnits(), false)
-                    + "  "
-                    + "<b>" + getString(R.string.txt_travel_duration) + "</b> "  + Strings.getDescriptiveDurationString((int) (System.currentTimeMillis() - session.getStartTimeStamp()) / 1000, this)
-                    + "  "
-                    + "<b>" + getString(R.string.txt_accuracy) + "</b> "  + Strings.getDistanceDisplay(this, session.getCurrentLocationInfo().getAccuracy(), preferenceHelper.shouldDisplayImperialUnits(), true));
-            */
 
             BatteryInfo batteryInfo = Systems.getBatteryInfo(getApplicationContext());
             boolean Cg = batteryInfo.IsCharging;
@@ -536,6 +528,23 @@ public class GpsLoggingService extends Service  {
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             String formattedDate = df.format(c);
+
+            SharedPreferences sharedSimpanNotif = getApplicationContext().getSharedPreferences("notif", Context.MODE_PRIVATE);
+            String lat = Strings.getFormattedLatitude(session.getCurrentLatitude()).replace(",",".");
+            String lon = Strings.getFormattedLongitude(session.getCurrentLongitude()).replace(",",".");
+            String maps_latlong = "https://maps.google.com/?q="+lat+","+lon;
+            SharedPreferences.Editor editor = sharedSimpanNotif.edit().clear();
+            editor.putString("maps_latlong", maps_latlong);
+            editor.putString("lat", lat);
+            editor.putString("lon", lon);
+            editor.putString("ischarging", String.valueOf(Cg));
+            editor.putString("batt", String.valueOf(bat));
+            editor.putString("tgl", lon);
+            editor.apply();
+
+            contentTitle = Strings.getFormattedLatitude(session.getCurrentLatitude()) + ", "
+                    + Strings.getFormattedLongitude(session.getCurrentLongitude());
+
 
             contentText = " Cg: "+Cg
                     +" # Bat : "+bat

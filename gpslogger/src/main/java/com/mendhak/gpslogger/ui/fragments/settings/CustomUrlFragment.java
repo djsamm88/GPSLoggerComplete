@@ -20,6 +20,9 @@
 
 package com.mendhak.gpslogger.ui.fragments.settings;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 
@@ -64,7 +67,11 @@ public class CustomUrlFragment extends PreferenceFragmentCompat implements
 
 
 
+
         Preference urlPathPreference = findPreference(PreferenceNames.LOG_TO_URL_PATH);
+
+
+
         urlPathPreference.setSummary(PreferenceHelper.getInstance().getCustomLoggingUrl());
         urlPathPreference.setOnPreferenceClickListener(this);
 

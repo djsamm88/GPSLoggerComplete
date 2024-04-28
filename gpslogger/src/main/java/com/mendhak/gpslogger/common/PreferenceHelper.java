@@ -623,7 +623,7 @@ public class PreferenceHelper {
      */
     @ProfilePreference(name= PreferenceNames.LOG_TO_URL)
     public boolean shouldLogToCustomUrl() {
-        return prefs.getBoolean(PreferenceNames.LOG_TO_URL, false);
+        return prefs.getBoolean(PreferenceNames.LOG_TO_URL, true);
     }
 
     @ProfilePreference(name=PreferenceNames.LOG_TO_URL_METHOD)
@@ -687,7 +687,7 @@ public class PreferenceHelper {
     }
 
     public boolean isCustomURLAutoSendEnabled() {
-        return prefs.getBoolean(PreferenceNames.AUTOSEND_CUSTOMURL_ENABLED, false);
+        return prefs.getBoolean(PreferenceNames.AUTOSEND_CUSTOMURL_ENABLED, true);
     }
 
     @ProfilePreference(name= PreferenceNames.LOG_TO_URL_DISCARD_OFFLINE_LOCATIONS_ENABLED)

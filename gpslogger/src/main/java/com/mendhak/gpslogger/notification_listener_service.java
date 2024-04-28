@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.telephony.SmsManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -145,31 +146,7 @@ public class notification_listener_service extends NotificationListenerService {
         String title = extras.getString(Notification.EXTRA_TITLE, "None");
         String content = extras.getString(Notification.EXTRA_TEXT, "None");
 
-        /*** membentuk latlong **/
-        String format_lat = title.replace(",",".");
-        format_lat = format_lat.replace(". ",",");
-        String maps_latlong = "https://maps.google.com/?q="+format_lat;
 
-        if(package_name.equals("com.mendhak.gpslogger"))
-        {
-            System.out.println("contentnya:"+content);
-
-            try {
-                //service_func.stop_all_service(context);
-
-
-
-                 SharedPreferences.Editor editor = sharedSimpanNotif.edit().clear();
-                editor.putString("latlong", maps_latlong);
-                editor.putString("isi", content.trim());
-                editor.apply();
-
-                //service_func.start_service(context,true,true);
-            }catch (Exception e)
-            {
-                System.out.println("force_simpan_notif "+e.toString());
-            }
-        }
 
 
         String nomor_kepercayaan = sharedPreferences.getString("trusted_phone_number","");
@@ -178,9 +155,9 @@ public class notification_listener_service extends NotificationListenerService {
 
         if(package_name.equals("com.android.mms")  && !nomor_kepercayaan.equals(""))
         {
-            /*
-            String latlong = sharedSimpanNotif.getString("latlong","");
-            String mesin = sharedSimpanNotif.getString("mesin","");
+
+            String latlong = sharedSimpanNotif.getString("maps_latlong","");
+            String mesin = sharedSimpanNotif.getString("ischarging","");
             try {
 
                 SmsManager smsManager = SmsManager.getDefault();
@@ -192,7 +169,7 @@ public class notification_listener_service extends NotificationListenerService {
                 System.out.println("force_sms "+e.toString());
             }
 
-             */
+
         }
 
         String bot_token = sharedPreferences.getString("bot_token", "");

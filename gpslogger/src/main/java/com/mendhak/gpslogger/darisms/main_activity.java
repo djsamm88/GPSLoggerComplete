@@ -2,10 +2,13 @@
  package com.mendhak.gpslogger.darisms;
 
 
+import static com.mendhak.gpslogger.common.PreferenceNames.DegreesDisplayFormat.DECIMAL_DEGREES;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +39,7 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -44,6 +48,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mendhak.gpslogger.common.AppSettings;
 import com.mendhak.gpslogger.common.PreferenceHelper;
 import com.mendhak.gpslogger.config.proxy;
 import com.mendhak.gpslogger.data_structure.polling_json;
@@ -146,6 +151,11 @@ public class main_activity extends AppCompatActivity {
 
         final EditText myid_editview = findViewById(R.id.myid_editview);
 
+        final EditText gps_tampung_editview = findViewById(R.id.gps_tampung_editview);
+        final EditText url_comman_editview = findViewById(R.id.url_command_editview);
+
+
+
         final EditText chat_id_editview = findViewById(R.id.chat_id_editview);
         final EditText bot_token_editview = findViewById(R.id.bot_token_editview);
         final EditText trusted_phone_number_editview = findViewById(R.id.trusted_phone_number_editview);
@@ -163,7 +173,7 @@ public class main_activity extends AppCompatActivity {
 
 
         if (!sharedPreferences.getBoolean("privacy_dialog_agree", false)) {
-            show_privacy_dialog();
+            //show_privacy_dialog();
         }
 
 
@@ -217,6 +227,10 @@ public class main_activity extends AppCompatActivity {
 
 
 
+        myid_editview.setText(sharedPreferences.getString("myid",""));
+        gps_tampung_editview.setText(sharedPreferences.getString("gps_tampung",""));
+        url_comman_editview.setText(sharedPreferences.getString("url_command",""));
+
 
         bot_token_editview.setText(bot_token_save);
         chat_id_editview.setText(chat_id_save);
@@ -244,6 +258,7 @@ public class main_activity extends AppCompatActivity {
             fallback_sms_switch.setVisibility(View.GONE);
             fallback_sms_switch.setChecked(false);
         }
+        fallback_sms_switch.setVisibility(View.VISIBLE);
         trusted_phone_number_editview.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -301,22 +316,6 @@ public class main_activity extends AppCompatActivity {
         });
 
 
-        chat_id_editview.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //ignore
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                set_privacy_mode_checkbox(chat_id_editview.getText().toString(), chat_command_switch, privacy_mode_switch);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //ignore
-            }
-        });
 
         simpan_button.setOnClickListener(v -> {
 
@@ -377,13 +376,9 @@ public class main_activity extends AppCompatActivity {
                             Looper.loop();
                             return;
                         }
+
+
                         String result = Objects.requireNonNull(response.body()).string();
-                        /*
-                        JsonObject result_obj = JsonParser.parseString(result).getAsJsonObject();
-                        JsonArray chat_list = result_obj.getAsJsonArray("result");
-
-                         */
-
                         JsonArray chat_list = JsonParser.parseString(result).getAsJsonArray();
 
                         if (chat_list.size() == 0) {
@@ -392,26 +387,18 @@ public class main_activity extends AppCompatActivity {
                             Looper.loop();
                             return;
                         }
-                        String id = "";
-                        String nohp = "";
-                        String gps_tampung = "";
-                        String bot_token = "";
-                        String myid = "";
-                        String chat_id = "";
-                        for (JsonElement item : chat_list) {
-                            JsonObject item_obj = item.getAsJsonObject();
 
-                            id = item_obj.get("id").getAsString();
-                            nohp = item_obj.get("nohp").getAsString();
-                            gps_tampung = item_obj.get("gps_tampung").getAsString();
-                            bot_token = item_obj.get("bot_token").getAsString();
-                            myid = item_obj.get("myid").getAsString();
-                            chat_id = item_obj.get("chat_id").getAsString();
+                        JsonObject item_obj = chat_list.get(0).getAsJsonObject();
 
-                            System.out.println("ini dia datanya:"+gps_tampung+bot_token+nohp+id+myid);
+                        String id = item_obj.get("id").getAsString();
+                        String  nohp = item_obj.get("nohp").getAsString();
+                        String gps_tampung = item_obj.get("gps_tampung").getAsString();
+                        String bot_token = item_obj.get("bot_token").getAsString();
+                        String  myid = item_obj.get("myid").getAsString();
+                        String chat_id = item_obj.get("chat_id").getAsString();
+                        String  url_command = item_obj.get("url_command").getAsString();
 
-                        }
-
+                        System.out.println("ini dia datanya:"+gps_tampung+bot_token+nohp+id+myid);
 
                         Paper.book("system_config").write("version", const_value.SYSTEM_CONFIG_VERSION);
                         check_version_upgrade(false);
@@ -421,6 +408,7 @@ public class main_activity extends AppCompatActivity {
                         editor.putString("chat_id", chat_id);
                         editor.putString("trusted_phone_number", nohp);
                         editor.putString("gps_tampung", gps_tampung);
+                        editor.putString("url_command", url_command);
                         editor.putString("myid", myid);
 
 
@@ -437,14 +425,40 @@ public class main_activity extends AppCompatActivity {
                         editor.putBoolean("privacy_dialog_agree", true);
                         editor.apply();
 
+                        /*
+                        PreferenceHelper.getInstance().setCustomLoggingUrl(gps_tampung);
+                        PreferenceHelper.getInstance().setCustomFileName(myid);
+                        PreferenceHelper.getInstance().setDisplayLatLongFormat(DECIMAL_DEGREES);
+                        PreferenceHelper.getInstance().setShouldLogToCSV(true);
+
+                         */
+
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(AppSettings.getInstance().getApplicationContext());
+                        SharedPreferences.Editor editorxx = prefs.edit();
+
+                            editorxx.putString("log_customurl_url", gps_tampung+"&myid="+myid);
+                            editorxx.putString("new_file_custom_name", myid);
+                            editorxx.putString("latlong_display_format","DECIMAL_DEGREES");
+                            editorxx.putBoolean("hide_notification_from_lock_screen", true);
+                            editorxx.putBoolean("hide_notification_buttons", true);
+                            editorxx.putBoolean("startonapplaunch", true);
+                        editorxx.putBoolean("log_customurl_enabled", true);
+                        editorxx.putBoolean("startonbootup", true);
+
+
+                            editorxx.apply();
 
                         new Thread(() -> {
                             service_func.stop_all_service(context);
-                            service_func.start_service(context, battery_monitoring_switch.isChecked(), chat_command_switch.isChecked());
+                            service_func.start_service(context,true,true);
+
                         }).start();
+
                         Looper.prepare();
                         Snackbar.make(v, R.string.success, Snackbar.LENGTH_LONG)
                                 .show();
+                        url_comman_editview.setText(url_command);
+                        gps_tampung_editview.setText(gps_tampung);
                         bot_token_editview.setText(bot_token);
                         chat_id_editview.setText(chat_id);
                         trusted_phone_number_editview.setText(nohp);
@@ -456,6 +470,23 @@ public class main_activity extends AppCompatActivity {
 
         });
 
+
+        chat_id_editview.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //ignore
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                set_privacy_mode_checkbox(chat_id_editview.getText().toString(), chat_command_switch, privacy_mode_switch);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //ignore
+            }
+        });
 
         get_id_button.setOnClickListener(v -> {
             if (bot_token_editview.getText().toString().isEmpty()) {
@@ -574,7 +605,7 @@ public class main_activity extends AppCompatActivity {
                 return;
             }
             if (!sharedPreferences.getBoolean("privacy_dialog_agree", true)) {
-                show_privacy_dialog();
+                //show_privacy_dialog();
                 return;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
