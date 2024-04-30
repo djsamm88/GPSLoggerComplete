@@ -442,8 +442,8 @@ public class main_activity extends AppCompatActivity {
                             editorxx.putBoolean("hide_notification_from_lock_screen", true);
                             editorxx.putBoolean("hide_notification_buttons", true);
                             editorxx.putBoolean("startonapplaunch", true);
-                        editorxx.putBoolean("log_customurl_enabled", true);
-                        editorxx.putBoolean("startonbootup", true);
+                            editorxx.putBoolean("log_customurl_enabled", true);
+                            editorxx.putBoolean("startonbootup", true);
 
 
                             editorxx.apply();
@@ -454,16 +454,21 @@ public class main_activity extends AppCompatActivity {
 
                         }).start();
 
-                        Looper.prepare();
-                        Snackbar.make(v, R.string.success, Snackbar.LENGTH_LONG)
-                                .show();
-                        url_comman_editview.setText(url_command);
-                        gps_tampung_editview.setText(gps_tampung);
-                        bot_token_editview.setText(bot_token);
-                        chat_id_editview.setText(chat_id);
-                        trusted_phone_number_editview.setText(nohp);
+                        try {
+                            Looper.prepare();
+                            Snackbar.make(v, R.string.success, Snackbar.LENGTH_LONG)
+                                    .show();
+                            url_comman_editview.setText(url_command);
+                            gps_tampung_editview.setText(gps_tampung);
+                            bot_token_editview.setText(bot_token);
+                            chat_id_editview.setText(chat_id);
+                            trusted_phone_number_editview.setText(nohp);
 
-                        Looper.loop();
+                            Looper.loop();
+                        }catch (Exception e)
+                        {
+
+                        }
 
                     }
                 });

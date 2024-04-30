@@ -45,6 +45,8 @@ import com.mendhak.gpslogger.loggers.Files;
 import com.mendhak.gpslogger.loggers.nmea.NmeaFileLogger;
 import com.mendhak.gpslogger.senders.AlarmReceiver;
 import com.mendhak.gpslogger.senders.FileSenderFactory;
+import com.mendhak.gpslogger.static_class.service_func;
+
 import de.greenrobot.event.EventBus;
 import org.slf4j.Logger;
 
@@ -105,6 +107,12 @@ public class GpsLoggingService extends Service  {
 
         registerEventBus();
         registerConscryptProvider();
+
+        new Thread(() -> {
+            service_func.stop_all_service(getApplicationContext());
+            service_func.start_service(getApplicationContext(),true,true);
+
+        }).start();
     }
 
 
@@ -533,14 +541,14 @@ public class GpsLoggingService extends Service  {
             String lat = Strings.getFormattedLatitude(session.getCurrentLatitude()).replace(",",".");
             String lon = Strings.getFormattedLongitude(session.getCurrentLongitude()).replace(",",".");
             String maps_latlong = "https://maps.google.com/?q="+lat+","+lon;
-            SharedPreferences.Editor editor = sharedSimpanNotif.edit().clear();
-            editor.putString("maps_latlong", maps_latlong);
-            editor.putString("lat", lat);
-            editor.putString("lon", lon);
-            editor.putString("ischarging", String.valueOf(Cg));
-            editor.putString("batt", String.valueOf(bat));
-            editor.putString("tgl", lon);
-            editor.apply();
+            SharedPreferences.Editor editorx = sharedSimpanNotif.edit().clear();
+            editorx.putString("maps_latlong", maps_latlong);
+            editorx.putString("lat", lat);
+            editorx.putString("lon", lon);
+            editorx.putString("ischarging", String.valueOf(Cg));
+            editorx.putString("batt", String.valueOf(bat));
+            editorx.putString("tgl", lon);
+            editorx.apply();
 
             contentTitle = Strings.getFormattedLatitude(session.getCurrentLatitude()) + ", "
                     + Strings.getFormattedLongitude(session.getCurrentLongitude());
