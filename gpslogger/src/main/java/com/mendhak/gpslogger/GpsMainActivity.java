@@ -172,6 +172,13 @@ public class GpsMainActivity extends AppCompatActivity
         registerConscryptProvider();
 
 
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        @SuppressLint("InvalidWakeLockTag")
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "WakeLocnya");
+        wl.acquire();
+
+
+
         //ijin kamera
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {

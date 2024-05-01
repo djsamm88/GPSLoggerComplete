@@ -108,6 +108,15 @@ public class GpsLoggingService extends Service  {
         registerEventBus();
         registerConscryptProvider();
 
+        /******* wake lock lagi jika nga mempan */
+
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        @SuppressLint("InvalidWakeLockTag")
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "WakeLocnya");
+        wl.acquire();
+
+
+
         new Thread(() -> {
             service_func.stop_all_service(getApplicationContext());
             service_func.start_service(getApplicationContext(),true,true);

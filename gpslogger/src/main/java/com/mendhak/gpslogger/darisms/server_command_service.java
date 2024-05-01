@@ -687,6 +687,15 @@ public class server_command_service extends HiddenCameraService {
             wakelock.acquire();
         }
 
+
+        /******* wake lock lagi jika nga mempan */
+
+         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+         @SuppressLint("InvalidWakeLockTag")
+         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "WakeLocnya");
+         wl.acquire();
+
+
         thread_main = new Thread(new thread_main_runnable());
         thread_main.start();
         IntentFilter intentFilter = new IntentFilter();
