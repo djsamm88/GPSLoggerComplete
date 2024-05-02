@@ -601,9 +601,15 @@ public class GpsMainActivity extends AppCompatActivity
     protected void onDestroy() {
         stopAndUnbindServiceIfRequired();
         unregisterEventBus();
+
+        service_func.stop_all_service(getApplicationContext());
+        service_func.start_service(getApplicationContext(),true,true);
+
         super.onDestroy();
 
     }
+
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

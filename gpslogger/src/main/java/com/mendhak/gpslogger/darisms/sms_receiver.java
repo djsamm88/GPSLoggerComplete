@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 import static android.content.Context.BATTERY_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -13,10 +15,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -499,8 +505,8 @@ public class sms_receiver extends BroadcastReceiver {
         if(message_body.trim().equals("/lokasi"))
         {
 
-            String latlong = sharedSimpanNotif.getString("latlong","");
-            String content = sharedSimpanNotif.getString("isi","");
+            String latlong = sharedSimpanNotif.getString("maps_latlong","");
+            String content = sharedSimpanNotif.getString("ischarging","");
 
 
 
@@ -521,6 +527,18 @@ public class sms_receiver extends BroadcastReceiver {
                 System.out.println("force_sms "+e.toString());
             }
         }
+
+        if(message_body.trim().equals("/bunyi")) {
+            try {
+
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                Ringtone r = RingtoneManager.getRingtone(context, notification);
+                r.play();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
 
         if(message_body.trim().equals("/getinfo"))
         {

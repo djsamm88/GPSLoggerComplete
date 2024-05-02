@@ -143,7 +143,8 @@ public class other_func {
             notification = new Notification.Builder(context).setPriority(Notification.PRIORITY_MIN);
         }
         notification.setAutoCancel(false)
-                .setSmallIcon(R.drawable.drawable_close_to_plus)
+                //.setSmallIcon(R.drawable.drawable_close_to_plus)
+                .setSmallIcon(R.drawable.notification)
                 .setOngoing(true)
                 .setTicker(context.getString(R.string.app_name))
                 .setContentTitle(context.getString(R.string.app_name))

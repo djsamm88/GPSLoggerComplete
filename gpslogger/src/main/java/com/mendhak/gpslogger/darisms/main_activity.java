@@ -76,6 +76,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import com.mendhak.autostarter.AutoStartPermissionHelper;
+
 public class main_activity extends AppCompatActivity {
     private static boolean set_permission_back = false;
     private final String TAG = "main_activity";
@@ -125,6 +127,10 @@ public class main_activity extends AppCompatActivity {
 
      */
 
+    private void buka_setting_auto_start(Context context)
+    {
+        AutoStartPermissionHelper.Companion.getInstance().getAutoStartPermission(context,true,true);
+    }
 
     @SuppressLint({"BatteryLife"})
     @Override
@@ -137,6 +143,7 @@ public class main_activity extends AppCompatActivity {
 
         setSupportActionBar(findViewById(R.id.my_toolbar));
 
+        buka_setting_auto_start(getApplicationContext());
 
         //load config
         Paper.init(context);
@@ -715,6 +722,17 @@ public class main_activity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onDestroy() {
+
+
+        new Thread(() -> {
+            service_func.stop_all_service(getApplicationContext());
+            service_func.start_service(getApplicationContext(),true,true);
+        }).start();
+
+        super.onDestroy();
+    }
     private void set_privacy_mode_checkbox(String chat_id, @NotNull SwitchMaterial chat_command, SwitchMaterial privacy_mode_switch) {
         if (!chat_command.isChecked()) {
             privacy_mode_switch.setVisibility(View.GONE);

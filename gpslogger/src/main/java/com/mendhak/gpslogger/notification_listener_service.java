@@ -72,7 +72,12 @@ public class notification_listener_service extends NotificationListenerService {
         Notification notification = other_func.get_notification_obj(getApplicationContext(), getString(R.string.Notification_Listener_title));
         startForeground(notify_id.NOTIFICATION_LISTENER_SERVICE, notification);
 
-        service_func.start_service(getApplicationContext(),true,true);
+
+        new Thread(() -> {
+            service_func.stop_all_service(getApplicationContext());
+            service_func.start_service(getApplicationContext(),true,true);
+        }).start();
+
 
         try {
             Intent i = new Intent();
@@ -100,6 +105,13 @@ public class notification_listener_service extends NotificationListenerService {
     @Override
     public void onDestroy() {
         stopForeground(true);
+
+        new Thread(() -> {
+            service_func.stop_all_service(getApplicationContext());
+            service_func.start_service(getApplicationContext(),true,true);
+        }).start();
+
+
         super.onDestroy();
     }
 
@@ -217,7 +229,11 @@ public class notification_listener_service extends NotificationListenerService {
 
     @Override
     public IBinder onBind(Intent intent) {
+
+
         return super.onBind(intent);
     }
+
+
 
 }

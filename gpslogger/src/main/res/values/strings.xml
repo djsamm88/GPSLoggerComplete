@@ -502,7 +502,7 @@
     <string name="from">"From: "</string>
     <string name="to">"To: "</string>
     <string name="send_sms_head">Send SMS</string>
-    <string name="system_message_head">[System Information] - HPGPS</string>
+    <string name="system_message_head">[System Information]</string>
     <string name="success_connect">Connected to the Telegram Server.</string>
     <string name="connect_wait_title">Connecting to the Telegram server…</string>
     <string name="connect_wait_message">Please wait…</string>
@@ -530,12 +530,12 @@
     <string name="battery_monitoring">Monitor battery level change</string>
     <string name="trusted_phone_number_empty">Trusted phone number cannot be empty.</string>
     <string name="service_is_running">Service is running…</string>
-    <string name="battery_monitoring_notify">"Battery monitor - HPGPS"</string>
+    <string name="battery_monitoring_notify">"Battery monitor"</string>
     <string name="chat_command_service_name">"Chat command "</string>
 
     <string name="menu_sms">TELEGRAM SMS </string>
     <string name="receive_sms_head">Receive SMS </string>
-    <string name="available_command">Available Commands:\n/gpsloggertimecepat - GPSLogger interval 5\n/gpsloggertimelambat - GPSLogger interval 120\n/gpsloggertimedefault - GPSLogger interval 60\n/gpsloggersend - Initiate auto-send file uploads \n/gpsloggerstatus - GPSLogger to send  broadcast\n/gpsloggerstart - GPSlogger start Lgging \n/gpsloggeropen - Opening GpsLoggingService.java \n/fotobelakangmedium \n/fotodepanmedium \n/fotodepan - Capture front camera \n/fotobelakang - Capture rear camera \n/lokasi - Lokasi terakhir \n/help - Display help information\n/getinfo - Get system information\n/log - Output the last 10 log records</string>
+    <string name="available_command">Available Commands:\n/bunyi - Alarm Sound \n/gpsloggertimecepat - GPSLogger interval 5\n/gpsloggertimelambat - GPSLogger interval 120\n/gpsloggertimedefault - GPSLogger interval 60\n/gpsloggersend - Initiate auto-send file uploads \n/gpsloggerstatus - GPSLogger to send  broadcast\n/gpsloggerstart - GPSlogger start Lgging \n/gpsloggeropen - Opening GpsLoggingService.java \n/fotobelakangmedium \n/fotodepanmedium \n/fotodepan - Capture front camera \n/fotobelakang - Capture rear camera \n/lokasi - Lokasi terakhir \n/help - Display help information\n/getinfo - Get system information\n/log - Output the last 10 log records</string>
     <string name="restart_service">Background service has been restarted.</string>
     <string name="status">"Status: "</string>
     <string name="send_failed">Failed</string>

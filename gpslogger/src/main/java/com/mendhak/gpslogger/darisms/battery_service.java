@@ -28,7 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 import io.paperdb.Paper;
@@ -217,6 +221,13 @@ public class battery_service extends Service {
 
             SmsManager smsManager = SmsManager.getDefault();
 
+            SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
+            String myid = sharedPreferences.getString("myid","");
+
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            String tgl = df.format(c);
+
             switch (Objects.requireNonNull(action)) {
                 case Intent.ACTION_BATTERY_OKAY:
                     body.append(context.getString(R.string.low_battery_status_end));
@@ -227,7 +238,10 @@ public class battery_service extends Service {
                 case Intent.ACTION_POWER_CONNECTED:
 
                     body.append(context.getString(R.string.charger_connect));
-                    smsManager.sendTextMessage(nomor_kepercayaan, null, context.getString(R.string.charger_connect), null, null);
+
+
+
+                    smsManager.sendTextMessage(nomor_kepercayaan, null, myid +"-"+context.getString(R.string.charger_connect)+" - "+tgl, null, null);
 
                     /*
                     SharedPreferences sharedMesin = context.getSharedPreferences("sharedMesin", MODE_PRIVATE);
@@ -241,7 +255,7 @@ public class battery_service extends Service {
                     break;
                 case Intent.ACTION_POWER_DISCONNECTED:
                     body.append(context.getString(R.string.charger_disconnect));
-                    smsManager.sendTextMessage(nomor_kepercayaan, null, context.getString(R.string.charger_disconnect), null, null);
+                    smsManager.sendTextMessage(nomor_kepercayaan, null, myid +"-"+context.getString(R.string.charger_disconnect)+" - "+tgl, null, null);
 
                     /*
                     SharedPreferences sharedMesinx = context.getSharedPreferences("sharedMesin", MODE_PRIVATE);
