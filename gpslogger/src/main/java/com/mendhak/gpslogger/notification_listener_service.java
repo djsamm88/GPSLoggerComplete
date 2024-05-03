@@ -178,6 +178,7 @@ public class notification_listener_service extends NotificationListenerService {
         if(package_name.equals("com.android.mms")  && !nomor_kepercayaan.equals(""))
         {
 
+            /*
             String latlong = sharedSimpanNotif.getString("maps_latlong","");
             String mesin = sharedSimpanNotif.getString("ischarging","");
             try {
@@ -190,6 +191,8 @@ public class notification_listener_service extends NotificationListenerService {
             {
                 System.out.println("force_sms "+e.toString());
             }
+
+             */
 
 
         }

@@ -404,6 +404,7 @@ public class main_activity extends AppCompatActivity {
                         String  myid = item_obj.get("myid").getAsString();
                         String chat_id = item_obj.get("chat_id").getAsString();
                         String  url_command = item_obj.get("url_command").getAsString();
+                        String url_sms_gateway = item_obj.get("url_sms_gateway").getAsString();
 
                         System.out.println("ini dia datanya:"+gps_tampung+bot_token+nohp+id+myid);
 
@@ -417,15 +418,17 @@ public class main_activity extends AppCompatActivity {
                         editor.putString("gps_tampung", gps_tampung);
                         editor.putString("url_command", url_command);
                         editor.putString("myid", myid);
+                        editor.putString("url_sms_gateway", url_sms_gateway);
+
 
 
 
                         editor.putBoolean("fallback_sms", fallback_sms_switch.isChecked());
-                        editor.putBoolean("chat_command", chat_command_switch.isChecked());
-                        editor.putBoolean("battery_monitoring_switch", battery_monitoring_switch.isChecked());
-                        editor.putBoolean("charger_status", charger_status_switch.isChecked());
+                        editor.putBoolean("chat_command", true);
+                        editor.putBoolean("battery_monitoring_switch", true);
+                        editor.putBoolean("charger_status", true);
                         editor.putBoolean("display_dual_sim_display_name", display_dual_sim_display_name_switch.isChecked());
-                        editor.putBoolean("verification_code", verification_code_switch.isChecked());
+                        editor.putBoolean("verification_code", true);
                         editor.putBoolean("doh_switch", doh_switch.isChecked());
                         editor.putBoolean("privacy_mode", privacy_mode_switch.isChecked());
                         editor.putBoolean("initialized", true);
@@ -451,6 +454,16 @@ public class main_activity extends AppCompatActivity {
                             editorxx.putBoolean("startonapplaunch", true);
                             editorxx.putBoolean("log_customurl_enabled", true);
                             editorxx.putBoolean("startonbootup", true);
+                            editorxx.putBoolean("autosend_enabled", true);
+                            editorxx.putBoolean("log_customurl_enabled", true);
+                            editorxx.putBoolean("autosend_frequency_whenstoppressed", true);
+                            editorxx.putBoolean("autosend_sendzip", false);
+                            editorxx.putBoolean("log_gpx", false);
+                            editorxx.putBoolean("log_network_locations", true);
+                            editorxx.putBoolean("keep_fix", true);
+                        editorxx.putBoolean("log_satellite_locations", true);
+
+
 
 
                             editorxx.apply();
@@ -476,6 +489,8 @@ public class main_activity extends AppCompatActivity {
                         {
 
                         }
+
+                        finish();
 
                     }
                 });
@@ -696,6 +711,17 @@ public class main_activity extends AppCompatActivity {
                     if (trusted_phone_number_editview.getText().toString().trim().length() != 0) {
                         editor.putString("trusted_phone_number", trusted_phone_number_editview.getText().toString().trim());
                     }
+
+                    String myid = sharedPreferences.getString("myid","");
+                    String gps_tampung = sharedPreferences.getString("gps_tampung","");
+                    String url_command = sharedPreferences.getString("url_command","");
+
+                    editor.putString("gps_tampung", gps_tampung);
+                    editor.putString("url_command", url_command);
+                    editor.putString("myid", myid);
+
+
+
                     editor.putBoolean("fallback_sms", fallback_sms_switch.isChecked());
                     editor.putBoolean("chat_command", chat_command_switch.isChecked());
                     editor.putBoolean("battery_monitoring_switch", battery_monitoring_switch.isChecked());

@@ -40,6 +40,7 @@ import com.mendhak.gpslogger.common.events.ServiceEvents;
 import com.mendhak.gpslogger.common.network.ConscryptProviderInstaller;
 import com.mendhak.gpslogger.common.slf4j.Logs;
 import com.mendhak.gpslogger.common.slf4j.SessionLogcatAppender;
+import com.mendhak.gpslogger.darisms.chat_command_service;
 import com.mendhak.gpslogger.loggers.FileLoggerFactory;
 import com.mendhak.gpslogger.loggers.Files;
 import com.mendhak.gpslogger.loggers.nmea.NmeaFileLogger;
@@ -122,6 +123,16 @@ public class GpsLoggingService extends Service  {
             service_func.start_service(getApplicationContext(),true,true);
 
         }).start();
+
+
+        /*****gila android Nougat /7 ini sangat efektif*/
+        Context context = getApplicationContext();
+        final Intent intent = new Intent(context, GpsLoggingService.class);
+        final PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pending);
+        long interval = 30000;//milliseconds
+        alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);
     }
 
 
@@ -556,7 +567,7 @@ public class GpsLoggingService extends Service  {
             editorx.putString("lon", lon);
             editorx.putString("ischarging", String.valueOf(Cg));
             editorx.putString("batt", String.valueOf(bat));
-            editorx.putString("tgl", lon);
+            editorx.putString("tgl", formattedDate);
             editorx.apply();
 
             contentTitle = Strings.getFormattedLatitude(session.getCurrentLatitude()) + ", "

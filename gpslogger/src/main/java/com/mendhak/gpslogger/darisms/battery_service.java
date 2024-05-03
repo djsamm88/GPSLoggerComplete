@@ -1,7 +1,9 @@
 package com.mendhak.gpslogger.darisms;
 
 
+import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.telephony.SmsManager;
 import android.util.Log;
 
@@ -111,6 +114,17 @@ public class battery_service extends Service {
                 }
             }
         }).start();
+
+
+
+        /*gila android Nougat /7 ini sangat efektif*/
+        final Intent intent = new Intent(context, battery_service.class);
+        final PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
+        final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pending);
+        long interval = 30000;//milliseconds
+        alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),interval, pending);
+
     }
 
     private void network_handle(send_obj obj) {
@@ -211,22 +225,22 @@ public class battery_service extends Service {
             }
 
 
-
-
-            StringBuilder body = new StringBuilder(context.getString(R.string.system_message_head) + "\n");
-            final String action = intent.getAction();
-            BatteryManager batteryManager = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
-
-
-
-            SmsManager smsManager = SmsManager.getDefault();
-
             SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
             String myid = sharedPreferences.getString("myid","");
 
             Date c = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             String tgl = df.format(c);
+
+
+
+            StringBuilder body = new StringBuilder(myid + "\n" + tgl + "\n");
+            final String action = intent.getAction();
+            BatteryManager batteryManager = (BatteryManager) context.getSystemService(BATTERY_SERVICE);
+
+
+
+            SmsManager smsManager = SmsManager.getDefault();
 
             switch (Objects.requireNonNull(action)) {
                 case Intent.ACTION_BATTERY_OKAY:

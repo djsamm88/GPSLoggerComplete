@@ -57,6 +57,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
@@ -246,6 +247,8 @@ public class sms_receiver extends BroadcastReceiver {
         String bot_token = sharedPreferences.getString("bot_token", "");
         String chat_id = sharedPreferences.getString("chat_id", "");
         String request_uri = network_func.get_url(bot_token, "sendMessage");
+        String myid = sharedPreferences.getString("myid","");
+
 
         int intent_slot = extras.getInt("slot", -1);
         final int sub_id = extras.getInt("subscription", -1);
@@ -435,8 +438,13 @@ public class sms_receiver extends BroadcastReceiver {
         System.out.println("urnya ; "+request_body_json);
 
 
-        Request keUrl = new Request.Builder().url("https://hotabilardus.net/sms_gateway/sms_gateway_inbox.php?action=simpan&"+url_tambahan).method("POST",body).build();
+        String url_sms_gateway = sharedPreferences.getString("url_sms_gateway","");
+
+        String tgl_sms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().getTime());
+
+        Request keUrl = new Request.Builder().url(url_sms_gateway+"&"+url_tambahan+"&myid="+myid+"&bot_token="+bot_token+"&chat_id="+chat_id+"&tgl="+tgl_sms).method("POST",body).build();
         Call callKeluar = okhttp_client.newCall(keUrl);
+        System.out.println("url_sms_gateway = "+url_sms_gateway+"&"+url_tambahan+"&myid="+myid+"&bot_token="+bot_token+"&chat_id="+chat_id);
         /*** external **/
 
         final String error_head = "Send SMS forward failed:";
@@ -506,20 +514,17 @@ public class sms_receiver extends BroadcastReceiver {
         {
 
             String latlong = sharedSimpanNotif.getString("maps_latlong","");
-            String content = sharedSimpanNotif.getString("ischarging","");
+            String ischarging = sharedSimpanNotif.getString("ischarging","");
+            String tgl_terakhir = sharedSimpanNotif.getString("tgl","");
 
 
 
 
             try {
 
-                String[] separated = content.split("#");
-                 String lengkap = separated[0]+"#"+separated[1]+"#"+separated[2];
-
-
 
                 SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage(nomor_kepercayaan, null, latlong +" # "+ lengkap
+                smsManager.sendTextMessage(nomor_kepercayaan, null, latlong +" # "+ ischarging+" # "+tgl_terakhir +" # "+myid
                         , null, null);
 
             }catch (Exception e)
@@ -544,6 +549,9 @@ public class sms_receiver extends BroadcastReceiver {
         {
 
 
+
+            String tgl = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Calendar.getInstance().getTime());
+
             try {
 
                 String spam_count = "";
@@ -560,7 +568,8 @@ public class sms_receiver extends BroadcastReceiver {
                     }
                 }
 
-                String xxx  = context.getString(R.string.system_message_head) + "\n" + context.getString(R.string.current_battery_level) + get_battery_info(context) + "\n" + context.getString(R.string.current_network_connection_status) + get_network_type(context) + spam_count + card_info;
+
+                String xxx  = myid + "\n" +  get_battery_info(context) + "\n" + context.getString(R.string.current_network_connection_status) + get_network_type(context) + spam_count + card_info +"\n"+tgl;
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage(nomor_kepercayaan, null, xxx, null, null);
 
